@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { CatchedController } from './catched.controller';
-import { CatchedService } from './catched.service';
+import { CatchedController } from './controllers/catched.controller';
+import { CatchedService } from './services/catched.service';
 
 @Module({
   controllers: [CatchedController],
-  providers: [CatchedService]
+  providers: [CatchedService],
 })
 export class CatchedModule {}
