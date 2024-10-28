@@ -6,6 +6,7 @@ import { CatchedModule } from './modules/catched/catched.module';
 import { HistoryModule } from './modules/history/history.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ConfigModule } from '@nestjs/config';
     PokemonModule,
     CatchedModule,
     HistoryModule,
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

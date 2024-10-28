@@ -1,11 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { Pokemon } from '../../pokemon/schemas/pokemon.schema';
+import { Pokemon } from './pokemon.schema';
 
 @Schema({
   timestamps: true,
 })
-export class Catched {
+export class History {
   @Prop()
   nickname: string;
 
@@ -13,4 +13,4 @@ export class Catched {
   pokemon: Pokemon;
 }
 
-export const CatchedSchema = SchemaFactory.createForClass(Catched);
+export const HistorySchema = SchemaFactory.createForClass(History);

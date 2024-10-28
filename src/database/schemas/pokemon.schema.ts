@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Stat, StatSchema } from './stat.schema';
 
 @Schema({
   timestamps: true,
@@ -28,15 +29,8 @@ export class Pokemon {
   @Prop()
   experiece: number;
 
-  @Prop()
-  stats: {
-    hp: number;
-    attack: number;
-    defense: number;
-    specialAttack: number;
-    specialDefense: number;
-    speed: number;
-  };
+  @Prop({ type: StatSchema })
+  stats: Stat;
 
   @Prop()
   moves: string[];
