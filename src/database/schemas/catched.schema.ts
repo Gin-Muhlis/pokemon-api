@@ -9,7 +9,7 @@ export class Catched {
   @Prop()
   nickname: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Pokemon' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Pokemon', index: true })
   pokemon: Pokemon;
 }
 

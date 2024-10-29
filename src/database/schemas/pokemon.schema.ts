@@ -1,11 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Stat, StatSchema } from './stat.schema';
+import { Document } from 'mongoose';
 
 @Schema({
   timestamps: true,
 })
-export class Pokemon {
-  @Prop()
+export class Pokemon extends Document {
+  @Prop({ index: true })
   name: string;
 
   @Prop()

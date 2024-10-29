@@ -1,29 +1,55 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { PokemonService } from '../services/pokemon.service';
-import { GetListPokemonResponse } from 'src/types/responses.type';
+import {
+  GetDetailPokemonResponse,
+  GetListPokemonResponse,
+} from 'src/types/responses.type';
 import { Query as ExpressQuery } from 'express-serve-static-core';
-import { Pokemon } from 'src/database/schemas/pokemon.schema';
 
-@Controller('pokemons')
+@Controller('pokemon')
 export class PokemonController {
   constructor(private pokemonService: PokemonService) {}
-
   @Get()
   async getListPokemon(
     @Query() query: ExpressQuery,
   ): Promise<GetListPokemonResponse> {
-    const page = Number(query.page) || 1;
-    const nextPage = page + 1;
-    const pokemons = await this.pokemonService.find(page);
+    try {
+      const page = Number(query.page) || 1;
+      const nextPage = page + 1;
+      const pokemons = await this.pokemonService.find(page);
 
-    return {
-      nextPage,
-      results: pokemons,
-    };
+      return {
+        statusCode: HttpStatus.OK,
+        nextPage,
+        results: pokemons,
+      };
+    } catch (error) {
+      throw error.response;
+    }
   }
 
-  @Get(':id')
-  async getDetailPokemon(@Param('id') id: string): Promise<Pokemon> {
-    return await this.pokemonService.detail(id);
+  @Get(':name')
+  async getDetailPokemon(
+    @Param('name') name: string,
+  ): Promise<GetDetailPokemonResponse> {
+    try {
+      const pokemon = await this.pokemonService.detail(name);
+
+      if (pokemon == null) throw new BadRequestException('Pokemon not found');
+
+      return {
+        statusCode: HttpStatus.OK,
+        pokemon,
+      };
+    } catch (error) {
+      throw error.response;
+    }
   }
 }

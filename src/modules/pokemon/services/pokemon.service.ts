@@ -13,10 +13,14 @@ export class PokemonService {
     const limitData = 21;
     const skipData = limitData * (currentPage - 1);
 
-    return await this.pokemonModel.find().limit(limitData).skip(skipData);
+    return await this.pokemonModel
+      .find()
+      .select('id name image number')
+      .limit(limitData)
+      .skip(skipData);
   }
 
-  async detail(id: string): Promise<Pokemon> {
-    return await this.pokemonModel.findById(id);
+  async detail(name: string): Promise<Pokemon> {
+    return await this.pokemonModel.findOne({ name });
   }
 }
