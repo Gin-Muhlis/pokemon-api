@@ -1,13 +1,14 @@
-import { Controller, Get, HttpStatus } from '@nestjs/common';
+import { Controller, Get, HttpStatus, UseInterceptors } from '@nestjs/common';
 import { HistoryService } from '../services/history.service';
-import { History } from '../../../database/schemas/history.schema';
 import { GetListHistoryResponse } from 'src/types/responses.type';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('history')
 export class HistoryController {
   constructor(private historyService: HistoryService) {}
 
   @Get()
+  @UseInterceptors(CacheInterceptor)
   async getlistHistory(): Promise<GetListHistoryResponse> {
     try {
       const listHistory = await this.historyService.findHistory();

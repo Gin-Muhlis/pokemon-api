@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Param,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PokemonService } from '../services/pokemon.service';
 import {
@@ -12,11 +13,14 @@ import {
   GetListPokemonResponse,
 } from 'src/types/responses.type';
 import { Query as ExpressQuery } from 'express-serve-static-core';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('pokemon')
 export class PokemonController {
   constructor(private pokemonService: PokemonService) {}
+
   @Get()
+  @UseInterceptors(CacheInterceptor)
   async getListPokemon(
     @Query() query: ExpressQuery,
   ): Promise<GetListPokemonResponse> {
@@ -36,6 +40,7 @@ export class PokemonController {
   }
 
   @Get(':name')
+  @UseInterceptors(CacheInterceptor)
   async getDetailPokemon(
     @Param('name') name: string,
   ): Promise<GetDetailPokemonResponse> {

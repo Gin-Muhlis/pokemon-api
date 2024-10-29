@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CatchedService } from '../services/catched.service';
 import {
@@ -17,12 +18,14 @@ import {
 } from '../../../types/responses.type';
 import { CatchPokemonDto } from '../dtos/catch-pokemon.dto';
 import { isValidObjectId } from 'mongoose';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('catched')
 export class CatchedController {
   constructor(private catchedService: CatchedService) {}
 
   @Get()
+  @UseInterceptors(CacheInterceptor)
   async getListCatched(): Promise<GetListCatchedResponse> {
     try {
       const listCatched = await this.catchedService.findCatched();
@@ -81,6 +84,7 @@ export class CatchedController {
   }
 
   @Get('count')
+  @UseInterceptors(CacheInterceptor)
   async getCountPokemonCatched(): Promise<CountCatchedResponse> {
     try {
       const countCatched = await this.catchedService.getCountCatched();
@@ -95,6 +99,7 @@ export class CatchedController {
   }
 
   @Get('/check/:id')
+  @UseInterceptors(CacheInterceptor)
   async getCheckIsPokemonChecked(
     @Param('id') id: string,
   ): Promise<CheckIsCatchedResponse> {
