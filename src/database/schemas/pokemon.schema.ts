@@ -28,7 +28,7 @@ export class Pokemon extends Document {
   image: string;
 
   @Prop()
-  experiece: number;
+  experience: number;
 
   @Prop({ type: StatSchema })
   stats: Stat;

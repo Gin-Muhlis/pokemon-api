@@ -10,10 +10,20 @@ import {
 import { PokemonService } from '../services/pokemon.service';
 import {
   GetDetailPokemonResponse,
-  GetListPokemonResponse,
 } from 'src/types/responses.type';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { CacheInterceptor } from '@nestjs/cache-manager';
+import {
+  ApiOperation,
+  ApiOkResponse,
+  ApiInternalServerErrorResponse,
+  ApiBadRequestResponse,
+  ApiParam,
+} from '@nestjs/swagger';
+import { ListPokemonResponseDto } from '../dtos/list-pokemon-response.dto';
+import { InternalServerErrorResponseDto } from 'src/shared/dtos/internal-server-error-response.dto';
+import { DetailPokemonResponseDto } from '../dtos/detail-pokemon-response.dto';
+import { BadRequestResponseDto } from 'src/shared/dtos/bad-request-response.dto';
 
 @Controller('pokemon')
 export class PokemonController {
@@ -21,9 +31,18 @@ export class PokemonController {
 
   @Get()
   @UseInterceptors(CacheInterceptor)
+  @ApiOperation({ summary: 'Get list data of pokemon' })
+  @ApiOkResponse({
+    description: 'List data pokemon fetched successfully',
+    type: ListPokemonResponseDto,
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+    type: InternalServerErrorResponseDto,
+  })
   async getListPokemon(
     @Query() query: ExpressQuery,
-  ): Promise<GetListPokemonResponse> {
+  ): Promise<ListPokemonResponseDto> {
     try {
       const page = Number(query.page) || 1;
       const nextPage = page + 1;
@@ -41,6 +60,20 @@ export class PokemonController {
 
   @Get(':name')
   @UseInterceptors(CacheInterceptor)
+  @ApiOperation({ summary: 'Get detail data of pokemon' })
+  @ApiParam({name: 'name', type: String, description: 'Name from the pokemon'})
+  @ApiOkResponse({
+    description: 'Detail pokemon fetched successfully',
+    type: DetailPokemonResponseDto
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+    type: InternalServerErrorResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Pokemon not found',
+    type: BadRequestResponseDto,
+  })
   async getDetailPokemon(
     @Param('name') name: string,
   ): Promise<GetDetailPokemonResponse> {
