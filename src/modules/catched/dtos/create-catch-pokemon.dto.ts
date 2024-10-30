@@ -7,3 +7,9 @@ export class CatchPokemonDto {
   @IsString()
   readonly nickname: string;
 }
+
+export class ParamCatchDto {
+  @IsNotEmpty()
+  @ApiProperty({type: String, description:'Id pokemon to catch', example: '6721a8d65bc8c48a71ac6a59'})
+  id:string;
+}

@@ -1,11 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Catched } from '../../../database/schemas/catched.schema';
 import { CatchPokemonDto } from '../dtos/create-catch-pokemon.dto';
 import { Pokemon } from '../../../database/schemas/pokemon.schema';
 import { History } from '../../../database/schemas/history.schema';
-import { CatchedDto } from '../dtos/catched.dto';
+import { ListCatchedResponseDto } from '../dtos/list-catched-response.dto';
+import { CatchPokemonResponseDto } from '../dtos/catch-pokemon-response.dto';
+import { DeleteCatchedResponseDto } from '../dtos/delete-catched-response.dto';
+import { CountCatchedResponseDto } from '../dtos/count-catched-response.dto';
+import { CheckCatchedResponseDto } from '../dtos/check-catched-response.dto';
 
 @Injectable()
 export class CatchedService {
@@ -15,7 +19,7 @@ export class CatchedService {
     @InjectModel(History.name) private historyModel: mongoose.Model<History>,
   ) {}
 
-  async findCatched(): Promise<CatchedDto[]> {
+  async findCatched(): Promise<ListCatchedResponseDto> {
     const listCatched = await this.catchedModel
       .find()
       .sort({ createdAt: -1 })
@@ -24,16 +28,20 @@ export class CatchedService {
         select: 'id number name image',
       });
 
-    return listCatched.map(
-      (data) =>
-        ({
-          nickname: data.nickname,
-          pokemon: data.pokemon,
-        }) as CatchedDto,
-    );
+    return {
+      statusCode: HttpStatus.OK,
+      results: listCatched,
+    };
   }
 
-  async createCatched(id: string, data: CatchPokemonDto): Promise<Pokemon> {
+  async createCatched(
+    id: string,
+    data: CatchPokemonDto,
+  ): Promise<CatchPokemonResponseDto> {
+    if (!mongoose.isValidObjectId(id)) {
+      throw new BadRequestException();
+    }
+
     const pokemon = await this.pokemonModel.findById(id);
 
     await this.catchedModel.create({
@@ -46,10 +54,17 @@ export class CatchedService {
       pokemon: pokemon._id,
     });
 
-    return pokemon;
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: `Pokemon ${pokemon.name} successfully catched`,
+    };
   }
 
-  async deleteCatched(id: string): Promise<Pokemon> {
+  async deleteCatched(id: string): Promise<DeleteCatchedResponseDto> {
+    if (!mongoose.isValidObjectId(id)) {
+      throw new BadRequestException();
+    }
+
     const catchedPokemon = await this.catchedModel
       .findById(id)
       .populate('pokemon');
@@ -57,20 +72,36 @@ export class CatchedService {
 
     await this.catchedModel.findByIdAndDelete(id);
 
-    return pokemon;
+    return {
+      statusCode: HttpStatus.OK,
+      message: `Pokemon ${pokemon.name} successfully deleted`,
+    };
   }
 
-  async getCountCatched(): Promise<number> {
-    return await this.catchedModel.countDocuments();
+  async getCountCatched(): Promise<CountCatchedResponseDto> {
+    const countCatched = await this.catchedModel.countDocuments();
+
+    return {
+      statusCode: HttpStatus.OK,
+      count: Number(countCatched),
+    };
   }
 
-  async getIsCatched(id: string) {
+  async getIsCatched(id: string): Promise<CheckCatchedResponseDto> {
+    if (!mongoose.isValidObjectId(id)) {
+      throw new BadRequestException();
+    }
+
     const pokemonId = new mongoose.Types.ObjectId(id);
 
     const isExists = await this.catchedModel.exists({ pokemon: pokemonId });
+    let isPokemonCatched = true;
 
-    if (isExists == null) return false;
+    if (isExists == null) isPokemonCatched = false;
 
-    return true;
+    return {
+      statusCode: HttpStatus.OK,
+      isCatched: isPokemonCatched,
+    };
   }
 }

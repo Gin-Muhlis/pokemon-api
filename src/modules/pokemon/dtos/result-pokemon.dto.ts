@@ -5,7 +5,7 @@ export class ResultPokemonDto {
     description: 'id of the pokemon',
     example: '671f5438753a0d9c152b47b7',
   })
-  id: string;
+  _id: unknown | string;
 
   @ApiProperty({ description: 'name of the pokemon', example: 'bulbasaur' })
   name: string;

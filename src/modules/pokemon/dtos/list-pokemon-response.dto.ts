@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ResultPokemonDto } from './results-pokemon.dto';
+import { ResultPokemonDto } from './result-pokemon.dto';
 
 export class ListPokemonResponseDto {
   @ApiProperty({ description: 'status response', example: 200 })

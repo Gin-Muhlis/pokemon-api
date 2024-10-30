@@ -8,7 +8,7 @@ import {
   PokemonList,
   PokemonMove,
   PokemonType,
-} from 'src/types/pokemon.type';
+} from 'src/shared/types/pokemon.type';
 
 @Injectable()
 export class PokemonSeeder {

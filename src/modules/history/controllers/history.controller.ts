@@ -1,9 +1,14 @@
-import { Controller, Get, HttpStatus, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import { HistoryService } from '../services/history.service';
 import { CacheInterceptor } from '@nestjs/cache-manager';
-import { ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import {
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { InternalServerErrorResponseDto } from 'src/shared/dtos/internal-server-error-response.dto';
 import { ListHistoryResponseDto } from '../dtos/list-history-response.dto';
+import { apiSwaggerResponse } from 'src/shared/helpers/swagger.helper';
 
 @Controller('history')
 export class HistoryController {
@@ -12,23 +17,9 @@ export class HistoryController {
   @Get()
   @UseInterceptors(CacheInterceptor)
   @ApiOperation({ summary: 'Get list history catched pokemon' })
-  @ApiOkResponse({
-    description: 'List data history catched pokemon fetched successfully',
-    type: ListHistoryResponseDto,
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Internal server error',
-    type: InternalServerErrorResponseDto,
-  })
-  async getlistHistory(): Promise<ListHistoryResponseDto> {
-    try {
-      const listHistory = await this.historyService.findHistory();
-      return {
-        statusCode: HttpStatus.OK,
-        results: listHistory,
-      };
-    } catch (error) {
-      throw error.response;
-    }
+  @ApiOkResponse(apiSwaggerResponse(ListHistoryResponseDto, 'List data history catched pokemon fetched successfully'))
+  @ApiInternalServerErrorResponse(apiSwaggerResponse(InternalServerErrorResponseDto, 'Internal server error'))
+  getlistHistory() {
+    return this.historyService.findHistory();
   }
 }

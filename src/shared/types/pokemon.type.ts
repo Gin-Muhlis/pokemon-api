@@ -1,38 +1,47 @@
-export interface PokemonAbility {
+export type PokemonAbility = {
   ability: {
     name: string;
     url: string;
   };
-}
+};
 
-export interface PokemonType {
+export type PokemonType = {
   type: {
     name: string;
     url: string;
   };
-}
+};
 
-export interface PokemonStat {
+export type PokemonStat = {
   base_stat: number;
   stat: {
     name: string;
     url: string;
   };
-}
+};
 
-export interface PokemonMove {
+export type PokemonMove = {
   move: {
     name: string;
     url: string;
   };
-}
+};
 
-export interface PokemonList {
+export type PokemonList = {
   name: string;
   url: string;
-}
+};
 
-export interface PokemonDetail {
+export type Stats = {
+  hp: number;
+  attack: number;
+  defense: number;
+  specialAttack: number;
+  specialDefense: number;
+  speed: number;
+};
+
+export type PokemonDetail = {
   name: string;
   id: number;
   types: string[];
@@ -42,13 +51,6 @@ export interface PokemonDetail {
   abilities: string[];
   image: string;
   base_experience: number;
-  stats: {
-    hp: number;
-    attack: number;
-    defense: number;
-    specialAttack: number;
-    specialDefense: number;
-    speed: number;
-  };
+  stats: Stats;
   moves: string[];
-}
+};

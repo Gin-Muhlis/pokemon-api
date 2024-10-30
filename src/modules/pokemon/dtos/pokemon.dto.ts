@@ -67,3 +67,12 @@ export class PokemonDto {
   })
   moves: string[];
 }
+
+export class ParamPokemonDto {
+  @ApiProperty({
+    type: String,
+    description: 'Name from the pokemon',
+    example: 'bulbasaur'
+  })
+  name: string;
+}

@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Pokemon } from '../../../database/schemas/pokemon.schema';
 import * as mongoose from 'mongoose';
-import { ResultPokemonDto } from '../dtos/results-pokemon.dto';
+import { ResultPokemonDto } from '../dtos/result-pokemon.dto';
+import { Query } from 'express-serve-static-core';
+import { ListPokemonResponseDto } from '../dtos/list-pokemon-response.dto';
+import { DetailPokemonResponseDto } from '../dtos/detail-pokemon-response.dto';
 
 @Injectable()
 export class PokemonService {
@@ -10,8 +13,10 @@ export class PokemonService {
     @InjectModel(Pokemon.name) private pokemonModel: mongoose.Model<Pokemon>,
   ) {}
 
-  async find(currentPage: number): Promise<ResultPokemonDto[]> {
+  async find(query: Query): Promise<ListPokemonResponseDto> {
     const limitData = 21;
+    const currentPage = Number(query.page) || 1;
+    const nextPage = currentPage + 1;
     const skipData = limitData * (currentPage - 1);
 
     const pokemons = await this.pokemonModel
@@ -20,18 +25,21 @@ export class PokemonService {
       .limit(limitData)
       .skip(skipData);
 
-    return pokemons.map(
-      (pokemon) =>
-        ({
-          id: pokemon._id,
-          name: pokemon.name,
-          image: pokemon.image,
-          number: pokemon.number,
-        }) as ResultPokemonDto,
-    );
+    return {
+      statusCode: HttpStatus.OK,
+      nextPage,
+      results: pokemons,
+    };
   }
 
-  async detail(name: string): Promise<Pokemon> {
-    return await this.pokemonModel.findOne({ name });
+  async detail(name: string): Promise<DetailPokemonResponseDto> {
+    const pokemon = await this.pokemonModel.findOne({ name });
+
+    if (pokemon == null) throw new BadRequestException();
+
+    return {
+      statusCode: HttpStatus.OK,
+      pokemon,
+    };
   }
 }

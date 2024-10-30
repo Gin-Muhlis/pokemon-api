@@ -9,7 +9,7 @@ export class BadRequestResponseDto {
 
   @ApiProperty({
     description: 'message response',
-    example: 'Params is not valid'
+    example: 'Bad request'
   })
   message: string;
 }
