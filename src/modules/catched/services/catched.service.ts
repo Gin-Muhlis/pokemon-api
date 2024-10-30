@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Catched } from '../../../database/schemas/catched.schema';
-import { CatchPokemonDto } from '../dtos/catch-pokemon.dto';
+import { CatchPokemonDto } from '../dtos/create-catch-pokemon.dto';
 import { Pokemon } from '../../../database/schemas/pokemon.schema';
 import { History } from '../../../database/schemas/history.schema';
+import { CatchedDto } from '../dtos/catched.dto';
 
 @Injectable()
 export class CatchedService {
@@ -14,11 +15,22 @@ export class CatchedService {
     @InjectModel(History.name) private historyModel: mongoose.Model<History>,
   ) {}
 
-  async findCatched(): Promise<Catched[]> {
-    return await this.catchedModel.find().sort({ createdAt: -1 }).populate({
-      path: 'pokemon',
-      select: 'id number name image',
-    });
+  async findCatched(): Promise<CatchedDto[]> {
+    const listCatched = await this.catchedModel
+      .find()
+      .sort({ createdAt: -1 })
+      .populate({
+        path: 'pokemon',
+        select: 'id number name image',
+      });
+
+    return listCatched.map(
+      (data) =>
+        ({
+          nickname: data.nickname,
+          pokemon: data.pokemon,
+        }) as CatchedDto,
+    );
   }
 
   async createCatched(id: string, data: CatchPokemonDto): Promise<Pokemon> {

@@ -10,15 +10,24 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { CatchedService } from '../services/catched.service';
-import {
-  CheckIsCatchedResponse,
-  CountCatchedResponse,
-  GetListCatchedResponse,
-  MessageResponse,
-} from '../../../types/responses.type';
-import { CatchPokemonDto } from '../dtos/catch-pokemon.dto';
+import { CatchPokemonDto } from '../dtos/create-catch-pokemon.dto';
 import { isValidObjectId } from 'mongoose';
 import { CacheInterceptor } from '@nestjs/cache-manager';
+import { ListCatchedResponseDto } from '../dtos/list-catched-response.dto';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+} from '@nestjs/swagger';
+import { InternalServerErrorResponseDto } from 'src/shared/dtos/internal-server-error-response.dto';
+import { CatchPokemonResponseDto } from '../dtos/catch-pokemon-response.dto';
+import { BadRequestResponseDto } from 'src/shared/dtos/bad-request-response.dto';
+import { DeleteCatchedResponseDto } from '../dtos/delete-catched-response.dto';
+import { CountCatchedResponseDto } from '../dtos/count-catched-response.dto';
+import { CheckCatchedResponseDto } from '../dtos/check-catched-response.dto';
 
 @Controller('catched')
 export class CatchedController {
@@ -26,7 +35,16 @@ export class CatchedController {
 
   @Get()
   @UseInterceptors(CacheInterceptor)
-  async getListCatched(): Promise<GetListCatchedResponse> {
+  @ApiOperation({ summary: 'Get list data of pokemon' })
+  @ApiOkResponse({
+    description: 'List data catched pokemon fetched successfully',
+    type: ListCatchedResponseDto,
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+    type: InternalServerErrorResponseDto,
+  })
+  async getListCatched(): Promise<ListCatchedResponseDto> {
     try {
       const listCatched = await this.catchedService.findCatched();
 
@@ -40,10 +58,30 @@ export class CatchedController {
   }
 
   @Post(':id')
+  @ApiOperation({ summary: 'Catch pokemon' })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    description: 'Id pokemon to catch',
+    example: '6721a8d65bc8c48a71ac6a59',
+  })
+  @ApiBody({ type: CatchPokemonDto })
+  @ApiOkResponse({
+    description: 'pokemon catched successfully',
+    type: CatchPokemonResponseDto,
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+    type: InternalServerErrorResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Id pokemon is not valid',
+    type: BadRequestResponseDto,
+  })
   async catchPokemon(
     @Param('id') id: string,
     @Body() createDto: CatchPokemonDto,
-  ): Promise<MessageResponse> {
+  ): Promise<CatchPokemonResponseDto> {
     try {
       if (!isValidObjectId(id)) {
         throw new BadRequestException('pokemon is not valid');
@@ -55,7 +93,7 @@ export class CatchedController {
       );
 
       return {
-        statusCode: HttpStatus.OK,
+        statusCode: HttpStatus.CREATED,
         message: `Pokemon ${catchedPokemon.name} successfully catched`,
       };
     } catch (error) {
@@ -64,9 +102,28 @@ export class CatchedController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete catched pokemon' })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    description: 'Id data catched to delete',
+    example: '6721a8d65bc8c48a71ac6a59',
+  })
+  @ApiOkResponse({
+    description: 'data pokemon catched deleted successfully',
+    type: DeleteCatchedResponseDto,
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+    type: InternalServerErrorResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Id pokemon is not valid',
+    type: BadRequestResponseDto,
+  })
   async deletePokemonCatched(
     @Param('id') id: string,
-  ): Promise<MessageResponse> {
+  ): Promise<DeleteCatchedResponseDto> {
     try {
       if (!isValidObjectId(id)) {
         throw new BadRequestException('Data pokemon is not valid');
@@ -85,7 +142,16 @@ export class CatchedController {
 
   @Get('count')
   @UseInterceptors(CacheInterceptor)
-  async getCountPokemonCatched(): Promise<CountCatchedResponse> {
+  @ApiOperation({ summary: 'Count catched pokemon' })
+  @ApiOkResponse({
+    description: 'count pokemon catched fetched successfully',
+    type: CountCatchedResponseDto,
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+    type: InternalServerErrorResponseDto,
+  })
+  async getCountPokemonCatched(): Promise<CountCatchedResponseDto> {
     try {
       const countCatched = await this.catchedService.getCountCatched();
 
@@ -100,9 +166,28 @@ export class CatchedController {
 
   @Get('/check/:id')
   @UseInterceptors(CacheInterceptor)
+  @ApiOperation({ summary: 'Check is pokemon catched' })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    description: 'Id data pokemon to check',
+    example: '6721a8d65bc8c48a71ac6a59',
+  })
+  @ApiOkResponse({
+    description: 'check pokemon catched fetched successfully',
+    type: CheckCatchedResponseDto,
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+    type: InternalServerErrorResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Id pokemon is not valid',
+    type: BadRequestResponseDto,
+  })
   async getCheckIsPokemonChecked(
     @Param('id') id: string,
-  ): Promise<CheckIsCatchedResponse> {
+  ): Promise<CheckCatchedResponseDto> {
     try {
       if (!isValidObjectId(id)) {
         throw new BadRequestException('Pokemon is not valid');

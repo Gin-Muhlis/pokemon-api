@@ -8,9 +8,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { PokemonService } from '../services/pokemon.service';
-import {
-  GetDetailPokemonResponse,
-} from 'src/types/responses.type';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import {
@@ -76,7 +73,7 @@ export class PokemonController {
   })
   async getDetailPokemon(
     @Param('name') name: string,
-  ): Promise<GetDetailPokemonResponse> {
+  ): Promise<DetailPokemonResponseDto> {
     try {
       const pokemon = await this.pokemonService.detail(name);
 
