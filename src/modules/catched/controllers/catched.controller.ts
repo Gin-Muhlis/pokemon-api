@@ -68,7 +68,7 @@ export class CatchedController {
     return this.catchedService.getCountCatched();
   }
 
-  @Get('/check/:id')
+  @Get('check/:id')
   @UseInterceptors(CacheInterceptor)
   @ApiOperation({ summary: 'Check is pokemon catched' })
   @ApiOkResponse(apiSwaggerResponse(CheckCatchedResponseDto, 'check pokemon catched fetched successfully'))

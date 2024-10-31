@@ -42,12 +42,17 @@ export class CatchedService {
       throw new BadRequestException();
     }
 
+    if (!mongoose.isValidObjectId(id)) {
+      throw new BadRequestException();
+    }
+
     const pokemon = await this.pokemonModel.findById(id);
 
-    await this.catchedModel.create({
+    const created = await this.catchedModel.create({
       nickname: data.nickname,
       pokemon: pokemon._id,
     });
+    console.log(created);
 
     await this.historyModel.create({
       nickname: data.nickname,
@@ -65,16 +70,11 @@ export class CatchedService {
       throw new BadRequestException();
     }
 
-    const catchedPokemon = await this.catchedModel
-      .findById(id)
-      .populate('pokemon');
-    const pokemon = catchedPokemon.pokemon;
-
     await this.catchedModel.findByIdAndDelete(id);
 
     return {
       statusCode: HttpStatus.OK,
-      message: `Pokemon ${pokemon.name} successfully deleted`,
+      message: `Pokemon successfully deleted`,
     };
   }
 
@@ -91,7 +91,6 @@ export class CatchedService {
     if (!mongoose.isValidObjectId(id)) {
       throw new BadRequestException();
     }
-
     const pokemonId = new mongoose.Types.ObjectId(id);
 
     const isExists = await this.catchedModel.exists({ pokemon: pokemonId });

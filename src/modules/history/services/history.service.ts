@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { History } from 'src/database/schemas/history.schema';
+import { History } from '../../../database/schemas/history.schema';
 import { ListHistoryResponseDto } from '../dtos/list-history-response.dto';
 
 @Injectable()

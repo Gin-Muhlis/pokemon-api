@@ -2,7 +2,6 @@ import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Pokemon } from '../../../database/schemas/pokemon.schema';
 import * as mongoose from 'mongoose';
-import { ResultPokemonDto } from '../dtos/result-pokemon.dto';
 import { Query } from 'express-serve-static-core';
 import { ListPokemonResponseDto } from '../dtos/list-pokemon-response.dto';
 import { DetailPokemonResponseDto } from '../dtos/detail-pokemon-response.dto';
@@ -35,7 +34,7 @@ export class PokemonService {
   async detail(name: string): Promise<DetailPokemonResponseDto> {
     const pokemon = await this.pokemonModel.findOne({ name });
 
-    if (pokemon == null) throw new BadRequestException();
+    if (!pokemon) throw new BadRequestException();
 
     return {
       statusCode: HttpStatus.OK,
